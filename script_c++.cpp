@@ -57,6 +57,6 @@ int autoClick(const char* window, const char* text) {
 
 int main()
 {
-    autoClick("Hogwarts Legacy", "确定");
+    autoClick("Hogwarts Legacy", "重试");
     return 0;
 }
