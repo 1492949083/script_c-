@@ -1,47 +1,45 @@
 ﻿#define _CRT_SECURE_NO_DEPRECATE
-
-#include <windows.h>
-#include <tchar.h>
 #include <iostream>
+#include <Windows.h>
 #include <string>
-#include <locale>
-#include <codecvt>
-#include <cstdlib>
 #include <ctime>
 
 using namespace std;
 
-int autoClick(const char* window, const char* text) {
-    wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
-    wstring wideWindowName = converter.from_bytes(window);
-    LPCWSTR lpWindowName = wideWindowName.c_str();
-    wstring wideText = converter.from_bytes(text);
-    LPCWSTR lpText = wideText.c_str();
-
-    // 首先，使用 FindWindow 函数获取目标程序窗口的句柄
-    HWND hWnd = FindWindow(NULL, lpWindowName);
-    printf("%s\n",window);
-
+//自动单击
+void autoClick(const char* windowName, const char* buttonName)
+{
+    HWND hWnd = FindWindowA(NULL, windowName);
     if (hWnd == NULL)
     {
-        std::cout << "无法找到窗口" << std::endl;
-        return 1;
+        cout << "没有找到窗口：" << windowName << endl;
+        return;
     }
-    // 设置窗口置顶
-    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	Sleep(50);
-    // 使用 FindWindowEx 函数获取 "重试" 按钮的句柄
-    HWND hBtn = FindWindowEx(hWnd, NULL, _T("Button"), lpText);
 
-    if (hBtn == NULL)
+    if (strcmp(buttonName, windowName) == 0)
     {
-        std::cout << "无法找到按钮" << std::endl;
-        return 1;
+        cout << "窗口置顶成功" << endl;
+        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        return;
     }
-
+    else
+    {
+        cout << buttonName <<windowName;
+        // 设置窗口为活动窗口
+        SetForegroundWindow(hWnd);
+    }
+	
+    
+	HWND btnWnd = FindWindowExA(hWnd, NULL, "Button", buttonName);
+    if (btnWnd == NULL)
+    {
+        cout << "没有找到按钮：" << buttonName << endl;
+        return;
+    }
+    
     // 获取按钮的位置和大小
     RECT rect;
-    GetWindowRect(hBtn, &rect);
+    GetWindowRect(btnWnd, &rect);
 
     // 计算鼠标的目标位置
     int x = rect.left + (rect.right - rect.left) / 2;
@@ -55,27 +53,30 @@ int autoClick(const char* window, const char* text) {
     mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
 
     std::cout << "按钮点击成功" << std::endl;
-
-    return 0;
 }
 
 int main()
 {
-    while (true)
-    {
-        if (autoClick("Hogwarts Legacy", "重试") == true)
-        {
-            autoClick("Hogwarts Legacy", "确定");
-            Sleep(1000);
-			system("C:/Users/ASUS/Desktop/霍格沃茨之遗.url");
-			cout << "启动快捷方式成功" << endl;
-        }
-        //打印当前时间
-        time_t now = time(0);
-        char* dt = ctime(&now);
-        cout << dt << endl;
+	cout << "如果含有中文请直接在源代码里设置" << endl << "如果窗口名=按钮名则置顶窗口" << endl;
+    
+    //打印当前时间
+    time_t now = time(0);
+    char* dt = ctime(&now);
+    cout << dt;
 
-        Sleep(100000);
-    }
+    //输入窗口名
+    string window;
+    cout << "输入窗口名：";
+    getline(cin, window);
+
+    Sleep(50);
+
+    //输入按钮名
+	string text;
+	cout << "输入按钮名：";
+	getline(cin, text);
+    
+	autoClick(window.c_str(), text.c_str());
+    //中文不支持
     return 0;
 }
