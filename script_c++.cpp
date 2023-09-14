@@ -57,6 +57,11 @@ void autoClick(const char* windowName, const char* buttonName)
 
 int main()
 {
+	//设置控制台标题
+	SetConsoleTitleA("自动单击");
+
+    
+
 	cout << "如果含有中文请直接在源代码里设置" << endl << "如果窗口名=按钮名则置顶窗口" << endl;
     
     //打印当前时间
@@ -78,5 +83,13 @@ int main()
     
 	autoClick(window.c_str(), text.c_str());
     //中文不支持
+
+
+    //暂停1秒
+    Sleep(1000);
+
+    //自动重启软件
+    system("cls");
+    main();
     return 0;
 }
